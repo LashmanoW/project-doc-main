@@ -1,0 +1,107 @@
+workspace {
+
+    model {
+        librarian = person "Librarian"
+        reader = person "Reader"
+        admin = person "Admin"
+        
+        email = softwaresystem "E-mail System" "Внутренняя система электронной почты Microsoft Exchange." "Existing System"
+        
+        bank = softwaresystem "Banking System" "Банковская система для проведения транзакция на оплату штрафов." "Existing System"
+        librarySystem = softwareSystem "Library accounting system" "Централизованная система для учета книг в библиотеке, отслеживания их выдачи читателям, и возврата обратно."{
+            singlePageApplication = container "Single-Page Application" "Предоставляет пользователям соответсвующий функционал через их веб-браузер." "Web Browser"
+                mobileApp = container "Mobile App" "Предоставляет читателям соответствующие функциональные возможности через их мобильные устройства." "Mobile App"
+                apiApplication = container "API Application" "Предоставляет функциональность системы учёта библиотеки через JSON/HTTPS API"  {
+                    authController = component "Sign In Controller" "Позволяет пользователям входить в системe учёта библиотеки." 
+                    registrationController = component "Sign up Controller" "Позволяет пользователям регистрироваться в системе учёта библиотеки."
+                    accountController = component "Account Controller" "Предоставляет читателям информацию о взятых книга и неуплаченных штрафах" 
+                    notificationController = component "Notification Controller" "Отправляет пуш-уведомления пользователям."
+                    securityController = component "Security Component" "Предоставляет функционал входа/регистрации."
+                    payController = component "Pay Controller" "Оплата штрафов"
+                    libraryController = component "Library Controller" "Учёт книг"
+                }
+                database = container "Database" "Хранит регистрационную информацию пользователя, хэшированные учетные данные для аутентификации, данные о книгах" "MySQL" "Database"
+        }
+                
+        librarian -> librarySystem "Управляет библиотечным фондом, выдача/возврат книг, учёт поступление новых книг"
+        reader -> librarySystem "Ищет и бронирует книги, оплачивает штрафы"
+        admin -> librarySystem "Настраивает систему, анализирует данные"
+        email -> reader "Отправляет e-mail для"
+        email -> librarian "Отправляет e-mail для"
+       
+        librarian -> singlePageApplication "Управляет библиотечным фондом, выдача/возврат книг, учёт поступление новых книг"
+        admin -> singlePageApplication "Настраивает систему, анализирует данные"
+        reader -> singlePageApplication "Регистация/авторизация, поиск и бронирование книг, оплачивает штрафы"
+        reader -> mobileApp "Регистация/авторизация, поиск и бронирование книг, оплачивает штрафы"        
+        
+        singlePageApplication -> authController "Выполняет вызовы API для"
+        singlePageApplication -> registrationController "Выполняет вызовы API для"
+        singlePageApplication -> accountController "Выполняет вызовы API для"
+        mobileApp -> authController "Выполняет вызовы API для"
+        mobileApp -> registrationController "Выполняет вызовы API для"
+        mobileApp -> accountController "Выполняет вызовы API для"
+        accountController -> payController "Оплачивать штрафы используя"
+        payController -> bank "Выполняет транзакцию на оплату штрафа используя"
+        authController -> securityController "Использует"
+        registrationController -> securityController "Использует"
+        securityController -> database "Чтение и запись"
+        securityController -> notificationController "Использует"
+        notificationController -> email "Отправляет e-mail используя"
+        notificationController -> accountController "Получает информацию о взятых книгах по пользователю"
+        accountController -> libraryController "Поиск и учёт книг"
+        libraryController -> database "Чтение и запись"
+    }
+
+    views {
+        systemContext librarySystem {
+            include *
+            autolayout lr
+        }
+        
+        container librarySystem {
+            include *
+            autolayout  lr
+        }
+        
+         component apiApplication "Components" {
+            include *
+            autoLayout lr
+        }
+
+        styles {
+            element "Software System" {
+                background #1168bd
+                color #ffffff
+            }
+
+            element "Existing System" {
+                background #999999
+                color #ffffff
+            }
+
+            element "Container" {
+                background #438dd5
+                color #ffffff
+            }
+
+            element "Web Browser" {
+                shape WebBrowser
+            }
+
+            element "Mobile App" {
+                shape MobileDeviceLandscape
+            }
+
+            element "Database" {
+                shape Cylinder
+            }
+
+            element "Component" {
+                background #85bbf0
+                color #000000
+            }
+        }
+        
+        theme default
+    }
+}
