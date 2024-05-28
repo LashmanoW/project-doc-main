@@ -20,7 +20,7 @@ workspace {
                     payController = component "Pay Controller" "Оплата штрафов"
                     libraryController = component "Library Controller" "Учёт книг"
                 }
-                database = container "Database" "Хранит регистрационную информацию пользователя, хэшированные учетные данные для аутентификации, данные о книгах" "MySQL" "Database"
+                database = container "Database" "Хранит регистрационную информацию пользователя, хэшированные учетные данные для аутентификации, данные о книгах" "PostgreSQL" "Database"
         }
                 
         librarian -> librarySystem "Управляет библиотечным фондом, выдача/возврат книг, учёт поступление новых книг"
